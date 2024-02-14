@@ -130,26 +130,38 @@ def predict_img(img_path, class_names, model):
 def main(**kwargs):
     try:
         print("\n")
+        
         dir_path, img_path, learning_zip, model_path = processArgs(**kwargs)
+        print("toto1")
         if learning_zip is None:
             learning_zip = 'Learning.zip'
+        print("toto2")
         if img_path is not None:
             assert os.path.isfile(img_path), "Please enter an image file path"
+        print("toto3")
         if dir_path is not None:
             assert os.path.isdir(dir_path), "Please enter an image dir path"
+        print("toto4")
         if model_path is not None:
+            print("toto5")
             assert os.path.isfile(model_path), "Please enter a model_path"
             assert os.path.isfile("class_names.csv"), "class_names.csv missing"
             model = load_model(model_path)
+            print("toto5b")
         else:
+            print("toto6")
             assert os.path.isfile(learning_zip), "Something wrong with zipfile"
             extract_file_from_zip(learning_zip, "model_param.keras", ".")
             extract_file_from_zip(learning_zip, "class_names.csv", ".")
+            print("toto6b")
             model = load_model('model_param.keras')
+            
         class_names = np.genfromtxt('class_names.csv',
                                     delimiter=',', dtype=str)
+        print("toto7")
         if img_path is not None:
             predict_img(img_path, class_names, model)
+            print("toto8")
         elif dir_path is not None:
             predict_dir(dir_path, class_names, model)
         if model_path is None:

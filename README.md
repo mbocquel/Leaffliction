@@ -70,4 +70,6 @@ After quite a few epoch, the accuracy was able to reach around 97% for the valid
 
 ## Predict
 
-The predict program takes an image, predict what it is, and then show the result
+The predict program takes an image, predict what it is, and then show the result.
+
+![Tranformation](./img/result.png "result")
