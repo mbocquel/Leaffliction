@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras import regularizers
 from Balance import balance
+from Predict import extract_file_from_zip
 import os
 import argparse
 import zipfile
@@ -145,6 +146,11 @@ def main(**kwargs):
 
         if os.path.isfile("model_param.keras"):
             print("Loading CNN model....................................")
+            model = load_model('model_param.keras')
+            print("................................................done !\n")
+        elif os.path.isfile("Learning.zip"):
+            print("Loading CNN model....................................")
+            extract_file_from_zip("Learning.zip", "model_param.keras", ".")
             model = load_model('model_param.keras')
             print("................................................done !\n")
         else:
