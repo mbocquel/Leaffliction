@@ -1,51 +1,60 @@
 # Leaffliction
 
-This 42 Machine Learning project aims at testing Convolutional Neural Network for computer vision. 
+This 42 Machine Learning project aims to test Convolutional Neural Networks for computer vision. The project was done with [Pierrickjay](https://github.com/Pierrickjay)
 
-The goal is to train a program to ba able to recognise photos of leaves with and without deseases. 
+The goal is to train a program to recognize photos of leaves with and without diseases.
 
-The dataset can be download here https://cdn.intra.42.fr/document/document/17547/leaves.zip
+The dataset can be downloaded from here: [leaves.zip](https://cdn.intra.42.fr/document/document/17547/leaves.zip)
 
 ## Distribution
 
-The Distribution.py program shows how the dataset is distributed. For example: 
+The **Distribution.py** program illustrates how the dataset is distributed. For example:
 
-```?> python src/Distribution.py images ```
+```
+?> python src/Distribution.py images
+```
 
 ![Distribution chart](./img/distribution.png "Distribution")
 
-As we can see, we need to balance the dataset by adding more images for some of the categories. 
+As observed, there is a need to balance the dataset by adding more images for some of the categories.
 
 ## Augmentation
 
-The Augmentation.py program takes an image and modify it to create 6 new images. 
+The **Augmentation.py** program takes an image and modifies it to create six new images.
 
-```?> python src/Augmentation.py images/Grape_spot/image\ \(1\).JPG```
+```
+?> python src/Augmentation.py images/Grape_spot/image\ \(1\).JPG
+```
 
 ![Augmentation](./img/Augmentation.png "Augmentation")
 
-The new images are saved in the same directory than the orignal. 
+The new images are saved in the same directory as the original.
 
-It is now possible to balance the dataset with :
+Now, it is possible to balance the dataset using:
 
-```?> python src/Balance.py images```
+```
+?> python src/Balance.py images
+```
 
-It will create enough images to balance the dataset.
+It will generate enough images to balance the dataset.
 
 ![Balanced](./img/Balanced.png "Balanced")
 
 ## Transformation
 
-This part aims at transforming the image to get some information about it. We used the plantCV library to do most of the transformation. The 42 subject asked us to create transformation for the dataset that we could use to learn the leaves characteristics. However, we ended up not using them and using a Convolutional Neural Network instead. The CNN learns itself what are the best filters and transformation to learn. 
+This section aims to transform the image to extract information from it. We initially utilized the plantCV library for most of the transformations. The 42 subject requested us to create transformations for the dataset that we could utilize to learn the characteristics of leaves. However, we ultimately decided not to use them and opted for a Convolutional Neural Network instead. The CNN autonomously learns the optimal filters and transformations to understand the data.
 
-```?>python src/Transformation.py images/Apple_Black_rot/image\ \(100\).JPG```
+```
+?>python src/Transformation.py images/Apple_Black_rot/image\ \(100\).JPG
+```
 
 ![Tranformation](./img/Transformation1.png "Tranformation")
 ![Tranformation](./img/Transformation2.png "Tranformation")
 
 ## Training
 
-The Train.py program uses the TensorFlow library. It create a CNN with the following structure : 
+
+The **Train.py** program utilizes the TensorFlow library to create a Convolutional Neural Network (CNN) with the following structure: 
 
 ```
 model = Sequential([
@@ -64,12 +73,12 @@ model = Sequential([
     ])
 ```
 
-It uses Adam as optimiser and SparseCategoricalCrossentropy as a loss function. 
+It uses Adam as the optimizer and SparseCategoricalCrossentropy as the loss function.
 
-After quite a few epoch, the accuracy was able to reach around 97% for the validation dataset. The model is saved in the Learning.zip file. 
+After numerous epochs, the accuracy was able to reach approximately 97% for the validation dataset. The model is saved in the **Learning.zip** file.
 
 ## Predict
 
-The predict program takes an image, predict what it is, and then show the result.
+The predict program takes an image, predicts its classification, and then displays the result.
 
 ![Tranformation](./img/result.png "result")
