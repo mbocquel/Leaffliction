@@ -1,11 +1,17 @@
 import unittest
 from Distribution import Distribution
+import os
 
 class TestDistribution(unittest.TestCase):
     """Test the distribution class"""
     
-    def test_1(self):
-        distribution = Distribution("../img_for_test/Distribution/test1")
+    def setUp(self):
+        self.test_dir_1 = os.path.join("..", "img_for_test", "Distribution", "test1")
+        self.test_dir_2 = os.path.join("..", "img_for_test", "Distribution", "test2")
+        self.test_dir_3 = os.path.join("..", "img_for_test", "Distribution", "test3")
+
+    def test_getFileCount_correctCounts(self):
+        distribution = Distribution(self.test_dir_1)
         file_count = distribution.getFileCount()
         self.assertIsInstance(file_count, dict)
         target = {
@@ -15,41 +21,41 @@ class TestDistribution(unittest.TestCase):
         }
         self.assertDictEqual(file_count, target)
 
-    def test1_list(self):
-        distribution = Distribution("../img_for_test/Distribution/test1")
+    def test_getFileList_correctList(self):
+        distribution = Distribution(self.test_dir_1)
         file_list = distribution.getFileList()
         self.assertIsInstance(file_list, dict)
         target = {
             'Apple_Black_rot' : set([
-                "../img_for_test/Distribution/test1/Apple_Black_rot/image (1).JPG",
-                "../img_for_test/Distribution/test1/Apple_Black_rot/image (2).JPG",
-                "../img_for_test/Distribution/test1/Apple_Black_rot/image (4).JPG"]),
+                os.path.join(self.test_dir_1, 'Apple_Black_rot', 'image (1).JPG'),
+                os.path.join(self.test_dir_1, 'Apple_Black_rot', 'image (2).JPG'),
+                os.path.join(self.test_dir_1, 'Apple_Black_rot', 'image (4).JPG')]),
             'Apple_healthy': set([
-                "../img_for_test/Distribution/test1/Apple_healthy/image (1).JPG",
-                "../img_for_test/Distribution/test1/Apple_healthy/sub/image (4).JPG",
-                "../img_for_test/Distribution/test1/Apple_healthy/image (2).JPG", 
-                "../img_for_test/Distribution/test1/Apple_healthy/image (3).JPG"]),
+                os.path.join(self.test_dir_1, 'Apple_healthy', 'image (1).JPG'),
+                os.path.join(self.test_dir_1, 'Apple_healthy', 'sub', 'image (4).JPG'),
+                os.path.join(self.test_dir_1, 'Apple_healthy', 'image (2).JPG'), 
+                os.path.join(self.test_dir_1, 'Apple_healthy', 'image (3).JPG')]),
             'Grape_Esca' : set([
-                "../img_for_test/Distribution/test1/Grape_Esca/image (12).JPG",
-                "../img_for_test/Distribution/test1/Grape_Esca/image (13).JPG",
-                "../img_for_test/Distribution/test1/Grape_Esca/image (14).JPG",
-                "../img_for_test/Distribution/test1/Grape_Esca/image (15).JPG",
-                "../img_for_test/Distribution/test1/Grape_Esca/image (16).JPG",
-                "../img_for_test/Distribution/test1/Grape_Esca/image (17).JPG",
-                "../img_for_test/Distribution/test1/Grape_Esca/image (18).JPG",
-                "../img_for_test/Distribution/test1/Grape_Esca/image (19).JPG",])
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (12).JPG'),
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (13).JPG'),
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (14).JPG'),
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (15).JPG'),
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (16).JPG'),
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (17).JPG'),
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (18).JPG'),
+                os.path.join(self.test_dir_1, 'Grape_Esca', 'image (19).JPG')])
         }
         self.assertDictEqual(file_list, target)
     
-    def test_2_empty(self):
-        distribution = Distribution("../img_for_test/Distribution/test2")
+    def test_getFileCount_emptyDirectory(self):
+        distribution = Distribution(self.test_dir_2)
         file_count = distribution.getFileCount()
         self.assertIsInstance(file_count, dict)
         target = {}
         self.assertDictEqual(file_count, target)
 
-    def test_3_empty_cat(self):
-        distribution = Distribution("../img_for_test/Distribution/test3")
+    def test_getFileCount_emptyCategory(self):
+        distribution = Distribution(self.test_dir_3)
         data = distribution.getFileCount()
         self.assertIsInstance(data, dict)
         target = {

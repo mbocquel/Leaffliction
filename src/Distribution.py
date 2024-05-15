@@ -6,6 +6,10 @@ import argparse
 class Distribution(ABC):
     """
     Class that create the distribution graph of all images from a directory
+    Attributes:
+        imageDir (str): The directory containing the images.
+        file_count (dict): Dictionary storing the count of images per category.
+        file_list (dict): Dictionary storing the list of images per category.
     """
     def __init__(self, dir) -> None:
         super().__init__()
@@ -19,20 +23,22 @@ class Distribution(ABC):
         for folder in os.listdir(self.imageDir):
             self.file_count[folder] = 0
             self.file_list[folder] = []
-            for foldername, subdirectorys, filenames in os.walk(self.imageDir + "/" + folder):
-                filenames = [foldername + "/" + filename for filename in filenames if filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
+            for foldername, subdirectorys, filenames in os.walk(os.path.join(self.imageDir, folder)):
+                filenames = [os.path.join(foldername, filename) for filename in filenames if filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
                 self.file_count[folder] += len(filenames)
                 self.file_list[folder] += filenames
             self.file_list[folder] = set(self.file_list[folder])
 
-    def getFileCount(self):
+    def getFileCount(self, reload=False):
         """Return the file count dict"""
-        self.computeFileCount()
+        if reload:
+            self.computeFileCount()
         return self.file_count
     
-    def getFileList(self):
+    def getFileList(self, reload=False):
         """Return the file count dict"""
-        self.computeFileCount()
+        if reload:
+            self.computeFileCount()
         return self.file_list
     
     def plot(self):
@@ -59,16 +65,13 @@ class Distribution(ABC):
 
 def main(**kwargs):
     try:
-        path = None
-        for key, value in kwargs.items():
-            if key == "path":
-                path = value
+        path = kwargs.get("path")
         assert os.path.isdir(path), "Please enter a correct path"
         distribution = Distribution(path)
         distribution.plot()
 
-    except Exception as err:
-        print("Error: ", err)
+    except (AssertionError, FileNotFoundError, NotADirectoryError) as err:
+        print("Error:", err)
         return 1
 
 

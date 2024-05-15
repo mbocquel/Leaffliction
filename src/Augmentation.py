@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 from abc import ABC
 import argparse
+from typing import Optional, Dict
 
 class Augmentation(ABC):
     """
     Class that augment an image by creating new transformed images from it
     """
-    def __init__(self, path, rot_angle=30, illum_level=1.5, zoom=5, cont_factor=1.5) -> None:
+    def __init__(self, path: str, rot_angle: float = 30, illum_level: float = 1.5, zoom: float = 5, cont_factor: float = 1.5) -> None:
         super().__init__()
         self.img_path = path
         self.img = Image.open(self.img_path)
@@ -18,12 +19,12 @@ class Augmentation(ABC):
             "zoom": zoom,
             "cont_factor":cont_factor
         }
-        self.aug_img = {
-            "rotated": None, 
-            "fliped": None,
-            "blured": None,
+        self.aug_img: Dict[str, Optional[Image.Image]] = {
+            "rotated": None,
+            "flipped": None,
+            "blurred": None,
             "illuminated": None,
-            "scaled": None, 
+            "scaled": None,
             "contrasted": None
         }
     
@@ -53,45 +54,45 @@ class Augmentation(ABC):
                 new_path += type + ".png"
         self.aug_img[type].save(new_path, format="PNG")
 
-    def rotate_img(self, rot_angle=None, save=True):
+    def rotate_img(self, rot_angle: Optional[float] = None, save: bool = True) -> Image.Image:
         """Rotate the image"""
-        if rot_angle:
+        if rot_angle is not None:
             self.param["rot_angle"] = rot_angle
         self.aug_img["rotated"] = self.img.rotate(self.param["rot_angle"], fillcolor="#FFFFFF")
         if save:
             self.save_img_aug("rotated")
         return self.aug_img["rotated"]
 
-    def flip_img(self, save=True):
+    def flip_img(self, save: bool = True) -> Image.Image:
         """Flip the image"""
         self.aug_img["fliped"] = ImageOps.flip(self.img)
         if save:
             self.save_img_aug("fliped")
         return self.aug_img["fliped"]
     
-    def blur_img(self, save=True):
+    def blur_img(self, save: bool = True) -> Image.Image:
         """Blur the image"""
         self.aug_img["blured"] = self.img.filter(ImageFilter.BLUR)
         if save:
             self.save_img_aug("blured")
         return self.aug_img["blured"]
 
-    def illuminate_img(self, illum_level=None, save=True):
+    def illuminate_img(self, illum_level: Optional[float] = None, save: bool = True) -> Image.Image:
         """illuminate the image"""
-        if illum_level:
+        if illum_level is not None:
             self.param["illum_level"] = illum_level
         self.aug_img["illuminated"] = ImageEnhance.Brightness(self.img).enhance(self.param["illum_level"])
         if save:
             self.save_img_aug("illuminated")
         return self.aug_img["illuminated"]
 
-    def scale_img(self, zoom=None, save=True):
+    def scale_img(self, zoom: Optional[float] = None, save: bool = True) -> Image.Image:
         """Scale the image"""
-        if zoom:
+        if zoom is not None:
             self.param["zoom"] = zoom
         w, h = self.img.size
         self.aug_img["scaled"] = self.img
-        if self.param["zoom"] and self.param["zoom"] != 1:
+        if self.param["zoom"] and self.param["zoom"] > 1:
             img_crop = self.img.crop(((w // 2) - w / self.param["zoom"], (h // 2) - h / self.param["zoom"],
                             (w // 2) + w / self.param["zoom"], (h // 2) + h / self.param["zoom"]))
             self.aug_img["scaled"] = img_crop.resize((w, h), Image.LANCZOS)
@@ -99,16 +100,16 @@ class Augmentation(ABC):
             self.save_img_aug("scaled")
         return self.aug_img["scaled"]
 
-    def increase_contrast(self, cont_factor=None, save=True):
+    def increase_contrast(self, cont_factor: Optional[float] = None, save: bool = True) -> Image.Image:
         """Increase contrast"""
-        if cont_factor:
+        if cont_factor is not None:
             self.param["cont_factor"] = cont_factor
         self.aug_img["contrasted"] = ImageEnhance.Contrast(self.img).enhance(self.param["cont_factor"])
         if save:
             self.save_img_aug("contrasted")
         return self.aug_img["contrasted"]
     
-    def generate_augmented_imgs(self):
+    def generate_augmented_imgs(self) -> None:
         """Generate all the transformed image"""
         self.rotate_img()
         self.flip_img()
@@ -117,7 +118,7 @@ class Augmentation(ABC):
         self.scale_img()
         self.increase_contrast()
     
-    def plot_img(self):
+    def plot_img(self) -> None:
         """Plot all generated images"""
         nb_img = 1 + len([1 for val in self.aug_img.values() if val])
         cur_img = 1
