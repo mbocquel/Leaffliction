@@ -23,8 +23,8 @@ class TestDistribution(unittest.TestCase):
         self.assertDictEqual(file_count, target)
 
     def test_3_empty_cat(self):
-        distributionTest1 = Distribution("../img_for_test/Distribution/test3")
-        data = distributionTest1.getFileCount()
+        distribution = Distribution("../img_for_test/Distribution/test3")
+        data = distribution.getFileCount()
         self.assertIsInstance(data, dict)
         target = {
             'Apple_Black_rot': 2,
