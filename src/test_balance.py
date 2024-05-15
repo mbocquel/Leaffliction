@@ -6,8 +6,8 @@ class TestBalance(unittest.TestCase):
     """Test the distribution class"""
     
     def test_1(self):
-        balance = Balance("../img_for_test/Distribution/test1")
-        distribution = Distribution("../img_for_test/Distribution/test1")
+        balance = Balance("../img_for_test/Balance/test1")
+        distribution = Distribution("../img_for_test/Balance/test1")
         self.assertTrue(balance.balance_statut == "Not Balanced")
         self.assertFalse(balance.isBalanced)
         balance.balance_data()
@@ -20,20 +20,23 @@ class TestBalance(unittest.TestCase):
             'Grape_Esca' : 8
         }
         self.assertDictEqual(balanced_distribution, target)
+        balance.remove_augmented_img()
+
     
     def test_2_empty(self):
-        balance = Balance("../img_for_test/Distribution/test2")
-        distribution = Distribution("../img_for_test/Distribution/test2")
+        balance = Balance("../img_for_test/Balance/test2")
+        distribution = Distribution("../img_for_test/Balance/test2")
         self.assertFalse(balance.isBalanced)
         self.assertTrue(balance.balance_statut == "Empty dataset")
         balance.balance_data()
         self.assertFalse(balance.isBalanced)
         self.assertTrue(balance.balance_statut == "Empty dataset")
         self.assertDictEqual(distribution.getFileCount(), {})
+        balance.remove_augmented_img()
 
     def test_3_empty_cat(self):
-        balance = Balance("../img_for_test/Distribution/test3")
-        distribution = Distribution("../img_for_test/Distribution/test3")
+        balance = Balance("../img_for_test/Balance/test3")
+        distribution = Distribution("../img_for_test/Balance/test3")
         self.assertFalse(balance.isBalanced)
         balance.balance_data()
         self.assertTrue(balance.balance_statut == "Empty category, imposible to balance")
@@ -43,10 +46,11 @@ class TestBalance(unittest.TestCase):
         }
         self.assertFalse(balance.isBalanced)
         self.assertDictEqual(distribution.getFileCount(), target)
+        balance.remove_augmented_img()
 
     def test_4_already_balanced(self):
-        balance = Balance("../img_for_test/Distribution/test4")
-        distribution = Distribution("../img_for_test/Distribution/test4")
+        balance = Balance("../img_for_test/Balance/test4")
+        distribution = Distribution("../img_for_test/Balance/test4")
         init_distrib = distribution.getFileCount()
         self.assertTrue(balance.isBalanced)
         self.assertTrue(balance.balance_statut == "Balanced")
@@ -55,6 +59,7 @@ class TestBalance(unittest.TestCase):
         self.assertTrue(balance.isBalanced)
         final_distrib = distribution.getFileCount()
         self.assertDictEqual(init_distrib, final_distrib)
+        balance.remove_augmented_img()
 
 
 if __name__ == "__main__":

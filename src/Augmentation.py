@@ -39,14 +39,25 @@ class Augmentation(ABC):
         if not self.aug_img[type]:
             return
         filepath_split = os.path.splitext(self.img_path)
-        new_path = filepath_split[0] + "_"+ type + ".png"
+        new_path = filepath_split[0] + "_"
+        match type:
+            case 'rotated':
+                new_path += type + "_" + str(self.param["rot_angle"]) + ".png"
+            case 'illuminated':
+                new_path += type + "_" + str(self.param["illum_level"]) + ".png"
+            case 'scaled':
+                new_path += type + "_" + str(self.param["zoom"]) + ".png"
+            case 'contrasted':
+                new_path += type + "_" + str(self.param["cont_factor"]) + ".png"
+            case _:
+                new_path += type + ".png"
         self.aug_img[type].save(new_path, format="PNG")
 
     def rotate_img(self, rot_angle=None, save=True):
         """Rotate the image"""
-        if not rot_angle:
-            rot_angle = self.param["rot_angle"]
-        self.aug_img["rotated"] = self.img.rotate(rot_angle, fillcolor="#FFFFFF")
+        if rot_angle:
+            self.param["rot_angle"] = rot_angle
+        self.aug_img["rotated"] = self.img.rotate(self.param["rot_angle"], fillcolor="#FFFFFF")
         if save:
             self.save_img_aug("rotated")
         return self.aug_img["rotated"]
@@ -67,22 +78,22 @@ class Augmentation(ABC):
 
     def illuminate_img(self, illum_level=None, save=True):
         """illuminate the image"""
-        if not illum_level:
-            illum_level = self.param["illum_level"]
-        self.aug_img["illuminated"] = ImageEnhance.Brightness(self.img).enhance(illum_level)
+        if illum_level:
+            self.param["illum_level"] = illum_level
+        self.aug_img["illuminated"] = ImageEnhance.Brightness(self.img).enhance(self.param["illum_level"])
         if save:
             self.save_img_aug("illuminated")
         return self.aug_img["illuminated"]
 
     def scale_img(self, zoom=None, save=True):
         """Scale the image"""
-        if not zoom:
-            zoom = self.param["zoom"]
+        if zoom:
+            self.param["zoom"] = zoom
         w, h = self.img.size
         self.aug_img["scaled"] = self.img
-        if zoom and zoom != 1:
-            img_crop = self.img.crop(((w // 2) - w / zoom, (h // 2) - h / zoom,
-                            (w // 2) + w / zoom, (h // 2) + h / zoom))
+        if self.param["zoom"] and self.param["zoom"] != 1:
+            img_crop = self.img.crop(((w // 2) - w / self.param["zoom"], (h // 2) - h / self.param["zoom"],
+                            (w // 2) + w / self.param["zoom"], (h // 2) + h / self.param["zoom"]))
             self.aug_img["scaled"] = img_crop.resize((w, h), Image.LANCZOS)
         if save:
             self.save_img_aug("scaled")
@@ -90,9 +101,9 @@ class Augmentation(ABC):
 
     def increase_contrast(self, cont_factor=None, save=True):
         """Increase contrast"""
-        if not cont_factor:
-            cont_factor = self.param["cont_factor"]
-        self.aug_img["contrasted"] = ImageEnhance.Contrast(self.img).enhance(cont_factor)
+        if cont_factor:
+            self.param["cont_factor"] = cont_factor
+        self.aug_img["contrasted"] = ImageEnhance.Contrast(self.img).enhance(self.param["cont_factor"])
         if save:
             self.save_img_aug("contrasted")
         return self.aug_img["contrasted"]

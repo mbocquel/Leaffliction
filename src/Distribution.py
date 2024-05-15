@@ -10,21 +10,30 @@ class Distribution(ABC):
     def __init__(self, dir) -> None:
         super().__init__()
         self.imageDir = dir
-        self.file_count = self.computeFileCount()
+        self.computeFileCount()
 
     def computeFileCount(self):
         """Create a dict with the categories and their number of images"""
-        data = {}
+        self.file_count = {}
+        self.file_list = {}
         for folder in os.listdir(self.imageDir):
-            data[folder] = 0
+            self.file_count[folder] = 0
+            self.file_list[folder] = []
             for foldername, subdirectorys, filenames in os.walk(self.imageDir + "/" + folder):
-                filenames = [filename for filename in filenames if filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
-                data[folder] += len(filenames)
-        return data
+                filenames = [foldername + "/" + filename for filename in filenames if filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
+                self.file_count[folder] += len(filenames)
+                self.file_list[folder] += filenames
+            self.file_list[folder] = set(self.file_list[folder])
 
     def getFileCount(self):
         """Return the file count dict"""
-        return self.file_count.copy()
+        self.computeFileCount()
+        return self.file_count
+    
+    def getFileList(self):
+        """Return the file count dict"""
+        self.computeFileCount()
+        return self.file_list
     
     def plot(self):
         """Plot the distribution graph """
