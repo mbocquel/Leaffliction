@@ -1,7 +1,6 @@
 import os
 import matplotlib.pyplot as plt
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
-from sys import argv
 from abc import ABC
 import argparse
 
@@ -9,169 +8,166 @@ class Augmentation(ABC):
     """
     Class that augment an image by creating new transformed images from it
     """
-    def __init__(self, img_path) -> None:
+    def __init__(self, path, rot_angle=30, illum_level=1.5, zoom=5, cont_factor=1.5) -> None:
         super().__init__()
-        self.img_path = img_path
+        self.img_path = path
         self.img = Image.open(self.img_path)
+        self.param = {
+            "rot_angle":rot_angle,
+            "illum_level": illum_level,
+            "zoom": zoom,
+            "cont_factor":cont_factor
+        }
+        self.aug_img = {
+            "rotated": None, 
+            "fliped": None,
+            "blured": None,
+            "illuminated": None,
+            "scaled": None, 
+            "contrasted": None
+        }
     
     def __del__(self):
+        """Class Destructor"""
         self.img.close()
+        for img in self.aug_img.values():
+            if img:
+                img.close()
 
-    def save_modif(self, img, _type):
+    def save_img_aug(self, type):
+        """Save the augmented images"""
+        if not self.aug_img[type]:
+            return
         filepath_split = os.path.splitext(self.img_path)
-        new_path = filepath_split[0] + _type + ".png"
-        img.save(new_path, format="PNG")
+        new_path = filepath_split[0] + "_"+ type + ".png"
+        self.aug_img[type].save(new_path, format="PNG")
 
-    def rotate_img(self, angle=30, save=True):
+    def rotate_img(self, rot_angle=None, save=True):
         """Rotate the image"""
-        rotated_img = self.img.rotate(angle, fillcolor="#FFFFFF")
+        if not rot_angle:
+            rot_angle = self.param["rot_angle"]
+        self.aug_img["rotated"] = self.img.rotate(rot_angle, fillcolor="#FFFFFF")
         if save:
-            self.save_modif(rotated_img, "_rotated")
-        return rotated_img
+            self.save_img_aug("rotated")
+        return self.aug_img["rotated"]
 
     def flip_img(self, save=True):
         """Flip the image"""
-        flipped_img = ImageOps.flip(self.img)
+        self.aug_img["fliped"] = ImageOps.flip(self.img)
         if save:
-            self.save_modif(flipped_img, "_fliped")
-        return flipped_img
+            self.save_img_aug("fliped")
+        return self.aug_img["fliped"]
     
     def blur_img(self, save=True):
         """Blur the image"""
-        blur_img = self.img.filter(ImageFilter.BLUR)
+        self.aug_img["blured"] = self.img.filter(ImageFilter.BLUR)
         if save:
-            self.save_modif(blur_img, "_blured")
-        return blur_img
+            self.save_img_aug("blured")
+        return self.aug_img["blured"]
 
-    def illuminate_img(self, level, save=True):
+    def illuminate_img(self, illum_level=None, save=True):
         """illuminate the image"""
-        bright_img = ImageEnhance.Brightness(self.img).enhance(level)
+        if not illum_level:
+            illum_level = self.param["illum_level"]
+        self.aug_img["illuminated"] = ImageEnhance.Brightness(self.img).enhance(illum_level)
         if save:
-            self.save_modif(bright_img, "_illuminated")
-        return bright_img
+            self.save_img_aug("illuminated")
+        return self.aug_img["illuminated"]
 
-    def scale_img(self, zoom, save=True):
+    def scale_img(self, zoom=None, save=True):
         """Scale the image"""
+        if not zoom:
+            zoom = self.param["zoom"]
+        w, h = self.img.size
+        self.aug_img["scaled"] = self.img
+        if zoom and zoom != 1:
+            img_crop = self.img.crop(((w // 2) - w / zoom, (h // 2) - h / zoom,
+                            (w // 2) + w / zoom, (h // 2) + h / zoom))
+            self.aug_img["scaled"] = img_crop.resize((w, h), Image.LANCZOS)
+        if save:
+            self.save_img_aug("scaled")
+        return self.aug_img["scaled"]
 
-    def increase_contrast(self, factor, save=True):
+    def increase_contrast(self, cont_factor=None, save=True):
         """Increase contrast"""
+        if not cont_factor:
+            cont_factor = self.param["cont_factor"]
+        self.aug_img["contrasted"] = ImageEnhance.Contrast(self.img).enhance(cont_factor)
+        if save:
+            self.save_img_aug("contrasted")
+        return self.aug_img["contrasted"]
     
-
-def save_in(file_path, img, _type):
-    filepath_split = os.path.splitext(file_path)
-    new_path = filepath_split[0] + _type + ".png"
-    img.save(new_path, format="PNG")
-
-
-
-def fliping_img(img, file_path):
-    flipped_img = ImageOps.flip(img)
-    save_in(file_path, flipped_img, "_fliped")
-    return flipped_img
-
-
-def bluring_img(img, file_path):
-    blur_img = img.filter(ImageFilter.BLUR)
-    save_in(file_path, blur_img, "_blured")
-    return blur_img
-
-
-def scaling_img(img, file_path):
-    w, h = img.size
-    zoom2 = 5
-    img_crop = img.crop(((w // 2) - w / zoom2, (h // 2) - h / zoom2,
-                         (w // 2) + w / zoom2, (h // 2) + h / zoom2))
-    img_zoomed = img_crop.resize((w, h), Image.LANCZOS)
-    save_in(file_path, img_zoomed, "_scaled")
-    return img_zoomed
-
-
-def increase_contrast(img, file_path):
-    contr_img = ImageEnhance.Contrast(img).enhance(1.5)
-    save_in(file_path, contr_img, "_contrasted")
-    return contr_img
+    def generate_augmented_imgs(self):
+        """Generate all the transformed image"""
+        self.rotate_img()
+        self.flip_img()
+        self.blur_img()
+        self.illuminate_img()
+        self.scale_img()
+        self.increase_contrast()
+    
+    def plot_img(self):
+        """Plot all generated images"""
+        nb_img = 1 + len([1 for val in self.aug_img.values() if val])
+        cur_img = 1
+        fig = plt.figure(figsize=(2.1 * nb_img , 2))
+        fig.add_subplot(1, nb_img, cur_img)
+        plt.imshow(self.img)
+        plt.axis('off')
+        plt.title("original")
+        for key, img in self.aug_img.items():
+            if img:
+                cur_img +=1
+                fig.add_subplot(1, nb_img, cur_img)
+                plt.imshow(img)
+                plt.axis('off')
+                plt.title(key)
+        plt.tight_layout()
+        manager = plt.get_current_fig_manager()
+        manager.set_window_title("Augmentation for " + self.img_path)
+        plt.show()
 
 
-def illuminating_img(img, file_path):
-
-    bright_img = ImageEnhance.Brightness(img).enhance(1.5)
-    save_in(file_path, bright_img, "_illuminated")
-    return bright_img
-
-
-def close_all(img, rot_img, flip_img,
-              blur_img, illum_img, contr_img, zoom_img):
-    img.close()
-    rot_img.close()
-    flip_img.close()
-    blur_img.close()
-    illum_img.close()
-    contr_img.close()
-    zoom_img.close()
+def process_arg(**kwargs):
+    """Process the program input arguments"""
+    plot = kwargs["show"]
+    args = {}
+    for key, val in kwargs.items():
+        if key == "show" or not val:
+            continue
+        args[key] = val
+    assert "path" in args and os.path.isfile(args["path"]), "Please provide a valid path"
+    return args, plot
 
 
-def plot_img(img, filename, rot_img, flip_img,
-             blur_img, illum_img, contr_img, scal_img):
-    fig = plt.figure(figsize=(15, 2))
-    fig.add_subplot(1, 7, 1)
-    plt.imshow(img)
-    plt.axis('off')
-    plt.title("Original")
-    fig.add_subplot(1, 7, 3)
-    plt.imshow(rot_img)
-    plt.axis('off')
-    plt.title("Rotation")
-    fig.add_subplot(1, 7, 4)
-    plt.imshow(flip_img)
-    plt.axis('off')
-    plt.title("Flip")
-    fig.add_subplot(1, 7, 2)
-    plt.imshow(blur_img)
-    plt.axis('off')
-    plt.title("Blur")
-    fig.add_subplot(1, 7, 5)
-    plt.imshow(illum_img)
-    plt.axis('off')
-    plt.title("Illumination")
-    fig.add_subplot(1, 7, 6)
-    plt.imshow(contr_img)
-    plt.axis('off')
-    plt.title("Contrast")
-    fig.add_subplot(1, 7, 7)
-    plt.imshow(scal_img)
-    plt.axis('off')
-    plt.title("Scaling")
-    plt.tight_layout()
-    manager = plt.get_current_fig_manager()
-    manager.set_window_title("Augmentation for " + filename)
-    plt.show()
-    close_all(img, rot_img, flip_img, blur_img, illum_img, contr_img, scal_img)
-
-
-def augment_images(filename, show):
-    img = Image.open(filename)
-    rot_img = rotating_img(img, filename)
-    flip_img = fliping_img(img, filename)
-    blur_img = bluring_img(img, filename)
-    illum_img = illuminating_img(img, filename)
-    scal_img = scaling_img(img, filename)
-    contr_img = increase_contrast(img, filename)
-    if show:
-        plot_img(img, filename, rot_img, flip_img,
-                 blur_img, illum_img, contr_img, scal_img)
-    close_all(img, rot_img, flip_img, blur_img, illum_img, contr_img, scal_img)
-
-
-def main():
+def main(**kwargs):
     try:
-        assert len(argv) == 2, "Please enter a file path as parametter"
-        assert os.path.isfile(argv[1]), "Please enter a file as parametter"
-        print(os.path.dirname(argv[1]))
-        augment_images(argv[1], True)
+        args, plot = process_arg(**kwargs)
+        augmentation = Augmentation(**args)
+        augmentation.generate_augmented_imgs()
+        if plot:
+            augmentation.plot_img()
+
     except Exception as err:
         print("Error: ", err)
         return 1
 
 
-if (__name__ == "__main__"):
-    main()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Description of the dataset")
+    parser.add_argument("--path", "-p", type=str,
+                        help="Path to the image to augment")
+    parser.add_argument("--show", "-s", action="store_true",
+                        help="Show the plot")
+    parser.add_argument("--rot_angle", "-ra", type=float,
+                        help="Rotation angle")
+    parser.add_argument("--illum_level", "-il", type=float,
+                        help="Illumination level")
+    parser.add_argument("--zoom", "-z", type=float,
+                        help="Zoom level")
+    parser.add_argument("--cont_factor", "-cf", type=float,
+                        help="Contrast Factor")
+    args = parser.parse_args()
+    kwargs = {key: getattr(args, key) for key in vars(args)}
+    main(**kwargs)
