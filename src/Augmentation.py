@@ -2,18 +2,66 @@ import os
 import matplotlib.pyplot as plt
 from PIL import Image, ImageOps, ImageFilter, ImageEnhance
 from sys import argv
+from abc import ABC
+import argparse
 
+class Augmentation(ABC):
+    """
+    Class that augment an image by creating new transformed images from it
+    """
+    def __init__(self, img_path) -> None:
+        super().__init__()
+        self.img_path = img_path
+        self.img = Image.open(self.img_path)
+    
+    def __del__(self):
+        self.img.close()
+
+    def save_modif(self, img, _type):
+        filepath_split = os.path.splitext(self.img_path)
+        new_path = filepath_split[0] + _type + ".png"
+        img.save(new_path, format="PNG")
+
+    def rotate_img(self, angle=30, save=True):
+        """Rotate the image"""
+        rotated_img = self.img.rotate(angle, fillcolor="#FFFFFF")
+        if save:
+            self.save_modif(rotated_img, "_rotated")
+        return rotated_img
+
+    def flip_img(self, save=True):
+        """Flip the image"""
+        flipped_img = ImageOps.flip(self.img)
+        if save:
+            self.save_modif(flipped_img, "_fliped")
+        return flipped_img
+    
+    def blur_img(self, save=True):
+        """Blur the image"""
+        blur_img = self.img.filter(ImageFilter.BLUR)
+        if save:
+            self.save_modif(blur_img, "_blured")
+        return blur_img
+
+    def illuminate_img(self, level, save=True):
+        """illuminate the image"""
+        bright_img = ImageEnhance.Brightness(self.img).enhance(level)
+        if save:
+            self.save_modif(bright_img, "_illuminated")
+        return bright_img
+
+    def scale_img(self, zoom, save=True):
+        """Scale the image"""
+
+    def increase_contrast(self, factor, save=True):
+        """Increase contrast"""
+    
 
 def save_in(file_path, img, _type):
     filepath_split = os.path.splitext(file_path)
     new_path = filepath_split[0] + _type + ".png"
     img.save(new_path, format="PNG")
 
-
-def rotating_img(img, file_path):
-    rotated_img = img.rotate(30, fillcolor="#FFFFFF")
-    save_in(file_path, rotated_img, "_rotated")
-    return rotated_img
 
 
 def fliping_img(img, file_path):
