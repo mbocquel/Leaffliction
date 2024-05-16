@@ -398,6 +398,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 
-images
+data
 en.subject.pdf
 CNN_explanations.ipynb

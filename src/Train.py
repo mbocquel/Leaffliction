@@ -11,7 +11,7 @@ import argparse
 import zipfile
 import shutil
 import random
-
+from abc import ABC
 
 class SaveModelCallback(Callback):
     def __init__(self, filepath):
@@ -21,6 +21,13 @@ class SaveModelCallback(Callback):
     def on_epoch_end(self, epoch, logs=None):
         self.model.save(self.filepath)
 
+
+class MyCNNModelisation(ABC):
+    """"""
+
+
+class Utils:
+    """Class that store some usefull methods to manage the images"""
 
 def normalise_img(image, label):
     image = tf.cast(image/255.0, tf.float32)

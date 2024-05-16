@@ -1,14 +1,14 @@
 import unittest
-from Distribution import Distribution
+from src.Distribution import Distribution
 import os
 
 class TestDistribution(unittest.TestCase):
     """Test the distribution class"""
     
     def setUp(self):
-        self.test_dir_1 = os.path.join("..", "img_for_test", "Distribution", "test1")
-        self.test_dir_2 = os.path.join("..", "img_for_test", "Distribution", "test2")
-        self.test_dir_3 = os.path.join("..", "img_for_test", "Distribution", "test3")
+        self.test_dir_1 = os.path.join("img_for_test", "Distribution", "test1")
+        self.test_dir_2 = os.path.join("img_for_test", "Distribution", "test2")
+        self.test_dir_3 = os.path.join("img_for_test", "Distribution", "test3")
 
     def test_getFileCount_correctCounts(self):
         distribution = Distribution(self.test_dir_1)

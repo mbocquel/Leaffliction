@@ -1,6 +1,6 @@
 from abc import ABC
-from Distribution import Distribution
-from Augmentation import Augmentation
+from .Distribution import Distribution
+from .Augmentation import Augmentation
 from typing import Dict, Tuple, List, Set, Optional
 import random
 import os
