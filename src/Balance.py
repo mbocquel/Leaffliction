@@ -23,15 +23,15 @@ class Balance(ABC):
         self.check_if_balanced()
 
     def check_if_balanced(self) -> None:
-        file_count = self.distribution.getFileCount()
+        file_count = self.distribution.getFileCount(reload=True)
         nb_files = sum(file_count.values())
         if nb_files == 0:
             self.isBalanced = False
-            self.balance_statut = "Empty dataset"
+            self.balance_status = "Empty dataset"
             return
         if min(file_count.values()) == 0:
             self.isBalanced = False
-            self.balance_statut = "Empty category, imposible to balance"
+            self.balance_status = "Empty category, imposible to balance"
             return
         val_percent = [(val *100) // nb_files for val in  file_count.values()]
         self.isBalanced = (max(val_percent) - min(val_percent) <= self.buffer)
