@@ -22,7 +22,7 @@ class SaveModelCallback(Callback):
         self.model.save(self.filepath)
 
 
-class MyCNNModelisation(ABC):
+class MyLeafCNN(ABC):
     """"""
 
 
