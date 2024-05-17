@@ -1,6 +1,6 @@
 import unittest
-from src.Balance import Balance
-from src.Distribution import Distribution
+from dataloader.Balance import Balance
+from dataloader.Distribution import Distribution
 import os
 
 class TestBalance(unittest.TestCase):
@@ -8,10 +8,10 @@ class TestBalance(unittest.TestCase):
     
     def setUp(self):
         """Set up for the tests."""
-        self.test_dirs = [os.path.join(os.getcwd(), "img_for_test", "Balance", "test1"), 
-                          os.path.join(os.getcwd(), "img_for_test", "Balance", "test2"), 
-                          os.path.join(os.getcwd(), "img_for_test", "Balance", "test3"), 
-                          os.path.join(os.getcwd(), "img_for_test", "Balance", "test4")]
+        self.test_dirs = [os.path.join("img_for_test", "Balance", "test1"), 
+                          os.path.join("img_for_test", "Balance", "test2"), 
+                          os.path.join("img_for_test", "Balance", "test3"), 
+                          os.path.join("img_for_test", "Balance", "test4")]
         for test_dir in self.test_dirs:
             assert os.path.isdir(test_dir), f"Test directory {test_dir} does not exist."
 

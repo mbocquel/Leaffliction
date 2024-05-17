@@ -1,5 +1,5 @@
 import unittest
-from src.Augmentation import Augmentation
+from dataloader.Augmentation import Augmentation
 from PIL import Image
 import os
 import numpy as np
