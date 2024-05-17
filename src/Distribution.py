@@ -21,6 +21,8 @@ class Distribution(ABC):
         self.file_count = {}
         self.file_list = {}
         for folder in os.listdir(self.imageDir):
+            if not os.path.isdir(os.path.join(self.imageDir, folder)):
+                continue
             self.file_count[folder] = 0
             self.file_list[folder] = []
             for foldername, subdirectorys, filenames in os.walk(os.path.join(self.imageDir, folder)):
