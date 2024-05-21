@@ -1,13 +1,20 @@
-"""My CNN Model"""
-
-# standard library
-
-# internal
+import tensorflow as tf
+from tensorflow.keras.callbacks import Callback, EarlyStopping
 from .base_model import BaseModel
 from dataloader.dataloader import DataLoader
+import logging
 
-# external
-import tensorflow as tf
+logger = logging.getLogger(__name__)
+
+class SaveModelCallback(Callback):
+    def __init__(self, filepath):
+        super(SaveModelCallback, self).__init__()
+        self.filepath = filepath
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.model.save(self.filepath)
+        logger.info(f"Model saved at {self.filepath} after epoch {epoch}")
+
 
 class My_CNN_model(BaseModel):
     """My CNN Model"""
@@ -15,153 +22,65 @@ class My_CNN_model(BaseModel):
         super().__init__(config)
         self.base_model = tf.keras.applications.VGG16(input_shape=self.config.model.input_shape, weights='imagenet', include_top=False)
         self.model = None
-        self.output_channels = self.config.model.output
-        self.dataset = None
-        self.ds_info = None
-
+        self.output_channels = self.config.model.output_channels
         self.batch_size = self.config.train.batch_size
         self.epoches = self.config.train.epoches
-        self.train_split = self.config.train.train_split
         self.optimizer = self.config.train.optimizer
         self.metrics = self.config.train.metrics
-        # self.buffer_size = self.config.train.buffer_size
-        # self.val_subsplits = self.config.train.val_subsplits
-        # self.validation_steps = 0
-        # self.train_length = 0
-        # self.steps_per_epoch = 0
-
         self.image_size = self.config.data.image_size
-        self.train_dataset = []
-        self.test_dataset = []
+        self.save_name = self.config.model.save_name
 
     def load_data(self):
         """Loads and Preprocess data """
-        self.dataset, self.ds_info = DataLoader().load_data(self.config.data)
-        return self.dataset, self.ds_info
-        self._preprocess_data()
+        train_dataset, val_dataset = DataLoader().load_data(self.config.data, subset="both")
+        self.class_names = train_dataset.class_names
+        self.train_dataset = train_dataset.map(self._normalize, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+        self.val_dataset= val_dataset.map(self._normalize)
 
-    def _preprocess_data(self):
-        """ Splits into training and test and set training parameters"""
-        train = self.dataset['train'].map(self._load_image_train, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-        test = self.dataset['test'].map(self._load_image_test)
-
-        self.train_dataset = train.cache().shuffle(self.buffer_size).batch(self.batch_size).repeat()
-        self.train_dataset = self.train_dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
-        self.test_dataset = test.batch(self.batch_size)
-
-        self._set_training_parameters()
-
-    # def _set_training_parameters(self):
-    #     """Sets training parameters"""
-    #     self.train_length = self.info.splits['train'].num_examples
-    #     self.steps_per_epoch = self.train_length // self.batch_size
-    #     self.validation_steps = self.info.splits['test'].num_examples // self.batch_size // self.val_subsplits
-
-    def _normalize(self, input_image, input_mask):
-        """ Normalise input image
-        Args:
-            input_image (tf.image): The input image
-            input_mask (int): The image mask
-
-        Returns:
-            input_image (tf.image): The normalized input image
-            input_mask (int): The new image mask
-        """
+    def _normalize(self, input_image, label):
+        """Normalise input image"""
         input_image = tf.cast(input_image, tf.float32) / 255.0
-        input_mask -= 1
-        return input_image, input_mask
-
-    @tf.function
-    def _load_image_train(self, datapoint):
-        """ Loads and preprocess  a single training image """
-        input_image = tf.image.resize(datapoint['image'], (self.image_size, self.image_size))
-        input_mask = tf.image.resize(datapoint['segmentation_mask'], (self.image_size, self.image_size))
-
-        if tf.random.uniform(()) > 0.5:
-            input_image = tf.image.flip_left_right(input_image)
-            input_mask = tf.image.flip_left_right(input_mask)
-
-        input_image, input_mask = self._normalize(input_image, input_mask)
-
-        return input_image, input_mask
-
-    def _load_image_test(self, datapoint):
-        """ Loads and preprocess a single test images"""
-
-        input_image = tf.image.resize(datapoint['image'], (self.image_size, self.image_size))
-        input_mask = tf.image.resize(datapoint['segmentation_mask'], (self.image_size, self.image_size))
-
-        input_image, input_mask = self._normalize(input_image, input_mask)
-
-        return input_image, input_mask
+        return input_image, label
 
     def build(self):
-        """ Builds the Keras model based """
-        pass
-    #     layer_names = [
-    #         'block_1_expand_relu',  # 64x64
-    #         'block_3_expand_relu',  # 32x32
-    #         'block_6_expand_relu',  # 16x16
-    #         'block_13_expand_relu',  # 8x8
-    #         'block_16_project',  # 4x4
-    #     ]
-    #     layers = [self.base_model.get_layer(name).output for name in layer_names]
-
-    #     # Create the feature extraction model
-    #     down_stack = tf.keras.Model(inputs=self.base_model.input, outputs=layers)
-
-    #     down_stack.trainable = False
-
-    #     up_stack = [
-    #         pix2pix.upsample(self.config.model.up_stack.layer_1, self.config.model.up_stack.kernels),  # 4x4 -> 8x8
-    #         pix2pix.upsample(self.config.model.up_stack.layer_2, self.config.model.up_stack.kernels),  # 8x8 -> 16x16
-    #         pix2pix.upsample(self.config.model.up_stack.layer_3, self.config.model.up_stack.kernels),  # 16x16 -> 32x32
-    #         pix2pix.upsample(self.config.model.up_stack.layer_4, self.config.model.up_stack.kernels),  # 32x32 -> 64x64
-    #     ]
-
-    #     inputs = tf.keras.layers.Input(shape=self.config.model.input)
-    #     x = inputs
-
-    #     # Downsampling through the model
-    #     skips = down_stack(x)
-    #     x = skips[-1]
-    #     skips = reversed(skips[:-1])
-
-    #     # Upsampling and establishing the skip connections
-    #     for up, skip in zip(up_stack, skips):
-    #         x = up(x)
-    #         concat = tf.keras.layers.Concatenate()
-    #         x = concat([x, skip])
-
-    #     # This is the last layer of the model
-    #     last = tf.keras.layers.Conv2DTranspose(
-    #         self.output_channels, self.config.model.up_stack.kernels, strides=2,
-    #         padding='same')  # 64x64 -> 128x128
-
-    #     x = last(x)
-
-    #     self.model = tf.keras.Model(inputs=inputs, outputs=x)
+        """Builds the Keras model based"""
+        for layer in self.base_model.layers:
+            layer.trainable = False
+        layers = self.base_model.layers
+        layers += [
+                tf.keras.layers.GlobalAveragePooling2D(),
+                tf.keras.layers.Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.1)),
+                tf.keras.layers.Dense(self.output_channels, activation='softmax')
+            ]
+        self.model = tf.keras.models.Sequential(layers)
+        self.model.build(input_shape=self.config.model.input_shape)
 
     def train(self):
         """Compiles and trains the model"""
-        pass
-    #     self.model.compile(optimizer=self.config.train.optimizer.type,
-    #                        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    #                        metrics=self.config.train.metrics)
-
-    #     model_history = self.model.fit(self.train_dataset, epochs=self.epoches,
-    #                                    steps_per_epoch=self.steps_per_epoch,
-    #                                    validation_steps=self.validation_steps,
-    #                                    validation_data=self.test_dataset)
-
-    #     return model_history.history['loss'], model_history.history['val_loss']
+        self.model.compile(
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+            optimizer=self.config.train.optimizer,
+            metrics=self.config.train.metrics)
+        save_callback = SaveModelCallback(filepath=self.save_name)
+        early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        model_history = self.model.fit(self.train_dataset,
+                                       epochs=self.epoches,
+                                       validation_data=self.val_dataset,
+                                       verbose=1,
+                                       callbacks=[save_callback, early_stopping])
+        return model_history.history['loss'], model_history.history['val_loss']
 
     def evaluate(self):
-        """Predicts resuts for the test dataset"""
+        """Predicts results for the validation dataset"""
         pass
-    #     predictions = []
-    #     for image, mask in self.dataset.take(1):
-    #         predictions.append(self.model.predict(image))
 
-    #     return predictions
-    
+    def save(self):
+        """Save the model and it's parameters"""
+        self.model.save(self.save_name)
+        logger.info(f"Model saved at {self.save_name}")
+
+    def predict(self, img):
+        """Predict the category of an image"""
+        img, label = self._normalize(img, 0)
+        # predicted_label =
+

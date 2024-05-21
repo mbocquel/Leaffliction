@@ -22,3 +22,7 @@ class BaseModel(ABC):
     @abstractmethod
     def evaluate(self):
         pass
+
+    @abstractmethod
+    def predict(self):
+        pass
