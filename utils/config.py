@@ -1,5 +1,3 @@
-"""Config class"""
-
 import json
 
 

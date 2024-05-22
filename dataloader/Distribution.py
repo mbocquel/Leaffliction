@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from abc import ABC
 import argparse
 
+
 class Distribution(ABC):
     """
     Class that create the distribution graph of all images from a directory

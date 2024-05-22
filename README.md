@@ -82,3 +82,8 @@ After numerous epochs, the accuracy was able to reach approximately 97% for the 
 The predict program takes an image, predicts its classification, and then displays the result.
 
 ![Tranformation](./img/result.png "result")
+
+
+To do : 
+- Predict
+- Main

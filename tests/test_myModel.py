@@ -1,6 +1,11 @@
 import unittest
 from model.my_CNN_model import My_CNN_model
 from utils.config import Config
+import tempfile
+import random
+import numpy as np
+from PIL import Image
+import os
 
 class TestMyCNNModel(unittest.TestCase):
     def setUp(self):
@@ -58,11 +63,37 @@ class TestMyCNNModel(unittest.TestCase):
         self.assertIsNotNone(train_loss)
         self.assertIsNotNone(val_loss)
 
-    # def test_evaluate(self):
-    #     self.model.load_data()
-    #     self.model.build()
-    #     predictions = self.model.evaluate(self.model.val_dataset)
-    #     self.assertIsNotNone(predictions)
+    def test_evaluate(self):
+        self.model.load_data()
+        self.model.build()
+        self.model.compile()
+        predictions = self.model.evaluate()
+        self.assertIsNotNone(predictions)
+
+    def test_predict_dir(self):
+        self.model.build()
+        self.test_dir = tempfile.TemporaryDirectory()
+        for i in range(5):  # Creation of 5 images for test
+            image_path = os.path.join(self.test_dir.name, f'test_image_{i}.png')
+            image = Image.new('RGB', (256, 256), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+            image.save(image_path)
+        predictions = self.model.predict(self.test_dir.name, print=False)
+        self.assertEqual(len(predictions), 5)
+        self.assertTrue(np.array([type(predict) == str for predict in predictions]).all())
+        self.test_dir.cleanup()
+
+    def test_predict_solo(self):
+        self.model.build()
+        self.test_dir = tempfile.TemporaryDirectory()
+        image_path = os.path.join(self.test_dir.name, f'test_image.png')
+        image = Image.new('RGB', (256, 256), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+        image.save(image_path)
+        prediction = self.model.predict(image_path, print=False)
+        self.assertEqual(len(prediction), 1)
+        self.assertTrue(type(prediction[0]) == str)
+        self.test_dir.cleanup()
+
 
 if __name__ == '__main__':
     unittest.main()
+
