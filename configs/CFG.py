@@ -3,6 +3,14 @@ The project and model config in json format
 """
 
 CFG = {
+    "augmentation": {
+        "path":"/Users/mbocquel/Documents/Leaf_propre/img_for_test/Augmentation/img.JPG",
+        "show": True,
+        "rot_angle": 30,
+        "illum_level": 1.5,
+        "zoom": 5,
+        "cont_factor":1.5
+    },
 	"data": {
 		"path": "/Users/mbocquel/Documents/Leaf_propre/data/",
 		"image_size": 256,
@@ -22,5 +30,9 @@ CFG = {
 		"input_shape": [256, 256, 3],
 		"output_channels": 8,
 		"save_name": "my_cnn_model.keras"
-	}
+	},
+    "predict": {
+        "path":"/Users/mbocquel/Documents/Leaf_propre/img_for_test/Augmenation/img.JPG",
+        "show_result_plot":True
+    }
 }

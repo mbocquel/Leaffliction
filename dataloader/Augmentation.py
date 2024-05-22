@@ -9,7 +9,7 @@ class Augmentation(ABC):
     """
     Class that augment an image by creating new transformed images from it
     """
-    def __init__(self, path: str, rot_angle: float = 30, illum_level: float = 1.5, zoom: float = 5, cont_factor: float = 1.5) -> None:
+    def __init__(self, path: str, rot_angle: float = 30, illum_level: float = 1.5, zoom: float = 5, cont_factor: float = 1.5, show=False) -> None:
         super().__init__()
         self.img_path = path
         self.img = Image.open(self.img_path)
@@ -19,6 +19,7 @@ class Augmentation(ABC):
             "zoom": zoom,
             "cont_factor":cont_factor
         }
+        self.show = show
         self.aug_img: Dict[str, Optional[Image.Image]] = {
             "rotated": None,
             "flipped": None,
@@ -117,6 +118,8 @@ class Augmentation(ABC):
         self.illuminate_img()
         self.scale_img()
         self.increase_contrast()
+        if self.show:
+            self.plot_img()
     
     def plot_img(self) -> None:
         """Plot all generated images"""

@@ -107,6 +107,7 @@ class My_CNN_model(BaseModel):
             logger.error(f"There is no validation dataset to use")
             return
         print("Evaluate")
+        self.compile()
         result = self.model.evaluate(self.val_dataset)
         return dict(zip(self.model.metrics_names, result))
 
@@ -119,6 +120,12 @@ class My_CNN_model(BaseModel):
         self.model.save(self.save_name)
         logger.info(f"Model saved at {self.save_name}")
 
+    def load(self):
+        """Load a model"""
+        if not os.path.isfile(self.save_name):
+            logger.error(f"Tried to load a model from a non existant file")
+            return
+        self.model.load(self.save_name)
 
     def predict(self, path, print=True):
         """Predict the category of an image or of a directory"""
