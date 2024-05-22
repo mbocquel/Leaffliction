@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.keras.callbacks import Callback, EarlyStopping
 from .base_model import BaseModel
 from dataloader.dataloader import DataLoader
 import logging
@@ -18,7 +17,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 
-class SaveModelCallback(Callback):
+class SaveModelCallback(tf.keras.callbacks.Callback):
     def __init__(self, filepath):
         super(SaveModelCallback, self).__init__()
         self.filepath = filepath
@@ -93,7 +92,7 @@ class My_CNN_model(BaseModel):
             return
         self.compile()
         save_callback = SaveModelCallback(filepath=self.save_name)
-        early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
         model_history = self.model.fit(self.train_dataset,
                                        epochs=self.epoches,
                                        validation_data=self.val_dataset,
