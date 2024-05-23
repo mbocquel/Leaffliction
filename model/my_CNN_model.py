@@ -10,7 +10,7 @@ from matplotlib.gridspec import GridSpec
 
 
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler(f"{__name__}.log")
+handler = logging.FileHandler(f"logs/{__name__}.log")
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -63,7 +63,7 @@ class My_CNN_model(BaseModel):
     def build(self):
         """Builds the Keras model based"""
         for layer in self.base_model.layers:
-            layer.trainable = False
+            layer.trainable = True
         layers = self.base_model.layers
         layers += [
                 tf.keras.layers.GlobalAveragePooling2D(),
@@ -120,12 +120,16 @@ class My_CNN_model(BaseModel):
         self.model.save(self.save_name)
         logger.info(f"Model saved at {self.save_name}")
 
-    def load(self):
+    def load(self, path=None):
         """Load a model"""
-        if not os.path.isfile(self.save_name):
+        
+        if not path and not os.path.isfile(self.save_name):
             logger.error(f"Tried to load a model from a non existant file")
             return
-        self.model.load(self.save_name)
+        elif path:
+          self.model = tf.keras.models.load_model(path)
+        else:
+          self.model = tf.keras.models.load_model(self.save_name)
 
     def predict(self, path, print=True):
         """Predict the category of an image or of a directory"""
@@ -133,28 +137,35 @@ class My_CNN_model(BaseModel):
             logger.error(f"The Model is not build, impossible to predict")
             return
         predictions = []
+        confidences = []
         if os.path.isdir(path):
             file_list = []
             for foldername, subdirectorys, filenames in os.walk(path):
                 filenames = [os.path.join(foldername, filename) for filename in filenames if filename.lower().endswith(('.png', '.jpg', '.jpeg'))]
                 file_list += filenames
             for file in file_list:
-                predictions.append(self.predict_one_img(file, print=print))
+                pred, conf = self.predict_one_img(np.array(Image.open(file, "r")), print=print)
+                predictions.append(pred)
+                confidences.append(conf)
         else:
-            predictions.append(self.predict_one_img(path, print=print))
-        return predictions
+            pred, conf = self.predict_one_img(np.array(Image.open(path, "r")), print=print)
+            predictions.append(pred)
+            confidences.append(conf)
+        return predictions, confidences
             
 
-    def predict_one_img(self, path_img, print=True):
+    def predict_one_img(self, img, print=True):
         """Predict the category of one img and print a graph if asked"""
         if not self.model :
             logger.error(f"The Model is not build, impossible to predict")
             return
-        img = np.array(Image.open(path_img, "r"))
-        img_norm, _ = self._normalize(img, 0)
+        img = Image.fromarray(img).convert('RGB')
+        img_resize = np.array(img.resize((self.config.data.image_size, self.config.data.image_size)))
+        img_norm, _ = self._normalize(img_resize, 0)
         y_pred = self.model.predict(
             tf.reshape(img_norm,tuple([1]+self.config.model.input_shape)))
         predicted_label = self.class_names[np.argmax(y_pred)]
+        confidence = np.max(y_pred)
         if print:
             fig = plt.figure()
             fig.patch.set_facecolor('black')
@@ -174,4 +185,4 @@ class My_CNN_model(BaseModel):
             manager = plt.get_current_fig_manager()
             manager.set_window_title("Leafflction prediction result")
             plt.show()
-        return predicted_label
+        return predicted_label, confidence

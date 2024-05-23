@@ -10,7 +10,7 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler(f"{__name__}.log")
+handler = logging.FileHandler(f"logs/{__name__}.log")
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)

@@ -77,8 +77,10 @@ class TestMyCNNModel(unittest.TestCase):
             image_path = os.path.join(self.test_dir.name, f'test_image_{i}.png')
             image = Image.new('RGB', (256, 256), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
             image.save(image_path)
-        predictions = self.model.predict(self.test_dir.name, print=False)
+        predictions, confidences = self.model.predict(self.test_dir.name, print=False)
         self.assertEqual(len(predictions), 5)
+        self.assertEqual(len(confidences), 5)
+        self.assertTrue(np.array([type(conf) == np.float32 for conf in confidences]).all())
         self.assertTrue(np.array([type(predict) == str for predict in predictions]).all())
         self.test_dir.cleanup()
 
@@ -88,9 +90,11 @@ class TestMyCNNModel(unittest.TestCase):
         image_path = os.path.join(self.test_dir.name, f'test_image.png')
         image = Image.new('RGB', (256, 256), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
         image.save(image_path)
-        prediction = self.model.predict(image_path, print=False)
+        prediction, confidence = self.model.predict(image_path, print=False)
         self.assertEqual(len(prediction), 1)
         self.assertTrue(type(prediction[0]) == str)
+        self.assertEqual(len(confidence), 1)
+        self.assertTrue(type(confidence[0]) == np.float32)
         self.test_dir.cleanup()
 
 
