@@ -28,11 +28,15 @@ class TestMyCNNModel(unittest.TestCase):
             "model": {
                 "input_shape": [256, 256, 3],
                 "output_channels": 8,
-                "save_name": "my_cnn_model.keras"
+                "save_name": "test_train.keras"
             }
         }     
         self.config = Config.from_json(CFG)
         self.model = My_CNN_model(CFG)
+
+    def tearDown(self) -> None:
+        if os.path.isfile(self.config.model.save_name):
+            os.remove(self.config.model.save_name)
 
     def test_load_data(self):
         """
@@ -80,7 +84,7 @@ class TestMyCNNModel(unittest.TestCase):
         predictions, confidences = self.model.predict(self.test_dir.name, print=False)
         self.assertEqual(len(predictions), 5)
         self.assertEqual(len(confidences), 5)
-        self.assertTrue(np.array([type(conf) == np.float32 for conf in confidences]).all())
+        self.assertTrue(np.array([type(conf) == float for conf in confidences]).all())
         self.assertTrue(np.array([type(predict) == str for predict in predictions]).all())
         self.test_dir.cleanup()
 
@@ -94,7 +98,7 @@ class TestMyCNNModel(unittest.TestCase):
         self.assertEqual(len(prediction), 1)
         self.assertTrue(type(prediction[0]) == str)
         self.assertEqual(len(confidence), 1)
-        self.assertTrue(type(confidence[0]) == np.float32)
+        self.assertTrue(type(confidence[0]) == float)
         self.test_dir.cleanup()
 
 

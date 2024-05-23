@@ -3,7 +3,6 @@ import uvicorn
 import numpy as np
 from io import BytesIO
 from PIL import Image
-import tensorflow as tf
 from model.my_CNN_model import My_CNN_model
 from configs.CFG import CFG
 
@@ -26,8 +25,12 @@ def read_file_as_image(data) -> np.ndarray:
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
 	image = read_file_as_image(await file.read())
-	prediction = MODEL.predict_one_img(image,print=False)
-	return prediction
+	prediction, confidence= MODEL.predict_one_img(image,print=False)
+	print(prediction)
+	return {
+		"prediction":prediction,
+		"confidence":round(confidence, 3)
+		}
 
 
 if __name__ == "__main__":

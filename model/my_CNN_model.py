@@ -165,7 +165,7 @@ class My_CNN_model(BaseModel):
         y_pred = self.model.predict(
             tf.reshape(img_norm,tuple([1]+self.config.model.input_shape)))
         predicted_label = self.class_names[np.argmax(y_pred)]
-        confidence = np.max(y_pred)
+        confidence = float(np.max(y_pred))
         if print:
             fig = plt.figure()
             fig.patch.set_facecolor('black')
