@@ -6,6 +6,8 @@ The goal is to train a program to recognize photos of leaves with and without di
 
 The dataset can be downloaded from here: [leaves.zip](https://cdn.intra.42.fr/document/document/17547/leaves.zip)
 
+*README is beeing updated*
+<!-- 
 ## Distribution
 
 The **Distribution.py** program illustrates how the dataset is distributed. For example:
@@ -86,4 +88,4 @@ The predict program takes an image, predicts its classification, and then displa
 
 To do : 
 - Predict
-- Main
+- Main -->
