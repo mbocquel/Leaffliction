@@ -11,7 +11,16 @@ from configs.CFG import CFG
 app = FastAPI()
 
 MODEL = My_CNN_model(CFG)
-MODEL.load_data()
+MODEL.class_names = [
+	'Apple_Black_rot',
+	'Apple_healthy',
+	'Apple_rust',
+	'Apple_scab',
+	'Grape_Black_rot',
+	'Grape_Esca',
+	'Grape_healthy',
+	'Grape_spot'
+]
 MODEL.load("saved_models/my_cnn_model.keras")
 
 
@@ -34,4 +43,4 @@ async def predict(file: UploadFile = File(...)):
 
 
 if __name__ == "__main__":
-	uvicorn.run(app, host='localhost', port=4242)
+	uvicorn.run(app, host='localhost', port=8888)

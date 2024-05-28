@@ -1,0 +1,21 @@
+services:
+
+  backend_fastapi:
+    restart: unless-stopped
+    build:
+      context: ./backend_fastAPI/
+      dockerfile: Dockerfile
+    ports:
+      - 8888:8888
+
+  frontend_streamlit:
+    restart: unless-stopped
+    build:
+      context: ./frontend_streamlit/
+      dockerfile: Dockerfile
+    ports:
+      - 8501:8501
+    depends_on:
+      - backend_fastapi
+    volumes:
+      - ./frontend_streamlit/src:/code
