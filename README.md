@@ -6,6 +6,12 @@ The goal is to train a program to recognize photos of leaves with and without di
 
 The dataset can be downloaded from here: [leaves.zip](https://cdn.intra.42.fr/document/document/17547/leaves.zip)
 
+## Run the program 
+```
+docker compose -f ./docker-compose.yml up
+```
+Then launch http://localhost:8501/ and enjoy ! 
+
 *README is beeing updated*
 <!-- 
 ## Distribution
