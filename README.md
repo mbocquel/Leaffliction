@@ -34,16 +34,19 @@ The original program can be executed using the `main.py` file located in the `ba
 The `--load` option is necessary for the Train functionality if we wish to continue training an existing model.
 
 *Distribution*
-
-<img src="img/Distribution.png" alt="Distribution" width="600"/>
+<div align="center">
+    <img src="img/Distribution.png" alt="Distribution" width="600"/>
+</div>
 
 *Augmentation*
-
+<div align="center">
 <img src="img/Augmentation.png" alt="Augmentation"/>
+</div>
 
 *Prediction*
-
+<div align="center">
 <img src="img/Prediction.png" alt="Prediction" width="500"/>
+</div>
 
 The configuration options are available in the `backend_fastAPI/configs/CFG.py` file.
 
