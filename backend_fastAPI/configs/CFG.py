@@ -32,7 +32,7 @@ CFG = {
 		"save_name": "saved_models/my_cnn_model.keras"
 	},
     "predict": {
-        "path":"img_for_test/Augmenation/img.JPG",
+        "path":"img_for_test/Augmentation/img.JPG",
         "show_result_plot":True
     }
 }

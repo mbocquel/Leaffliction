@@ -44,3 +44,5 @@ docker compose -f ./docker-compose.yml up
 ```
 
 Then, open your web browser and navigate to http://localhost:8501/ to start using the project.
+
+![Front-end](img/image.png)

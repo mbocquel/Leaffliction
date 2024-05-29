@@ -59,7 +59,6 @@ def main(**kwargs) -> int:
         if kwargs.get("predict") and not model:
             logger.error("No available model to use for prediction")
         elif kwargs.get("predict"):
-            print("PREDICT")
             predict(model, config.predict.path, show_result=config.predict.show_result_plot)
         
         if kwargs.get("clean"):
