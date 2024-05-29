@@ -29,7 +29,7 @@ CFG = {
 	"model": {
 		"input_shape": [256, 256, 3],
 		"output_channels": 8,
-		"save_name": "my_cnn_model.keras"
+		"save_name": "saved_models/my_cnn_model.keras"
 	},
     "predict": {
         "path":"img_for_test/Augmenation/img.JPG",

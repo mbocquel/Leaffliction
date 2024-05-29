@@ -6,6 +6,18 @@ The goal is to train a program to recognize photos of leaves with and without di
 
 The dataset can be downloaded from here: [leaves.zip](https://cdn.intra.42.fr/document/document/17547/leaves.zip)
 
+
+## Project structure
+
+- **Dristribution** : Help to analyse the dataset by showing the distribution of images available for training. 
+- **Augmentation**: If the dataset is unbalanced, it's important to increase the data available by creating modified images.
+- **Balance**: Automaticaly creates augmented photos for the categories with the least amount of data. After this program is run, the dataset should be balanced. 
+- **Training**: Uses transfert learning from a TensorFlow Convolutional Neural Network (CNN) and fine-tunes it with the dataset.
+- **Predict**: Make a prediction about the category of a photo.
+- **Clean**: Removes the augmented photos from the dataset.
+
+
+
 ## Run the program 
 ```
 docker compose -f ./docker-compose.yml up
