@@ -71,7 +71,7 @@ class My_CNN_model(BaseModel):
                 tf.keras.layers.Dense(self.output_channels, activation='softmax')
             ]
         self.model = tf.keras.models.Sequential(layers)
-        self.model.build(input_shape=self.config.model.input_shape)
+        self.model.build()
         logger.info(f"Model build")
 
     def compile(self):
