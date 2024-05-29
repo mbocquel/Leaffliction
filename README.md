@@ -31,7 +31,16 @@ The original program can be executed using the `main.py` file located in the `ba
 - **--clean** or **-c**: Cleans the directory by removing the augmented images.
 - **--load** or **-l**: Loads an existing model.
 
-The `--load` option is necessary for the Predict functionality if not used directly after Train, and for the Train functionality if we wish to continue training an existing model.
+The `--load` option is necessary for the Train functionality if we wish to continue training an existing model.
+
+*Distribution*
+![Distribution](img/Distribution.png)
+
+*Augmentation*
+![Augmentation](img/Augmentation.png)
+
+*Prediction*
+![Prediction](img/Prediction.png)
 
 The configuration options are available in the `backend_fastAPI/configs/CFG.py` file.
 
