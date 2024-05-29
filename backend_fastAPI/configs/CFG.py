@@ -32,7 +32,9 @@ CFG = {
 		"save_name": "saved_models/my_cnn_model.keras"
 	},
     "predict": {
-        "path":"img_for_test/Augmentation/img.JPG",
+        "model_path":"saved_models/my_cnn_model.keras",
+        "img_path":"img_for_test/Augmentation/img.JPG",
+        "class_names": ['Apple_Black_rot', 'Apple_healthy','Apple_rust','Apple_scab','Grape_Black_rot','Grape_Esca','Grape_healthy','Grape_spot'],
         "show_result_plot":True
     }
 }

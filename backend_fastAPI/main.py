@@ -56,10 +56,11 @@ def main(**kwargs) -> int:
                 model = My_CNN_model(CFG)
             train(model)
 
-        if kwargs.get("predict") and not model:
-            logger.error("No available model to use for prediction")
-        elif kwargs.get("predict"):
-            predict(model, config.predict.path, show_result=config.predict.show_result_plot)
+        if kwargs.get("predict"):
+            model = My_CNN_model(CFG)
+            model.load(config.predict.model_path)
+            model.class_names = config.predict.class_names
+            predict(model, config.predict.img_path, show_result=config.predict.show_result_plot)
         
         if kwargs.get("clean"):
             Balance(config.data.path).remove_augmented_img()
