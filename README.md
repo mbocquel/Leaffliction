@@ -55,7 +55,7 @@ The configuration options are available in the `backend_fastAPI/configs/CFG.py` 
 To launch the full version of the project, which includes both the front-end and the back-end, use the following command:
 
 ```
-docker compose -f ./docker-compose.yml up
+make
 ```
 
 Then, open your web browser and navigate to http://localhost:8501/ to start using the project.
