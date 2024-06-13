@@ -402,4 +402,5 @@ data
 en.subject.pdf
 CNN_explanations.ipynb
 *.keras
-venv
+.venv
+.vscode
